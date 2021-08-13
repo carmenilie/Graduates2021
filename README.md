@@ -84,55 +84,55 @@ pipelineJob("greetingJob") {
            cps {
              script('''
                  pipeline{
-    				environment{
-						registry = "carmenilie/java-app"
-                        registryCredential = 'dockerhub_id'
-                        dockerImage = ''
-					}
-                    agent{
-                        label 'master'
-                    }
-                    stages{
-                        stage('Clone Repo'){
-                            steps{                            
-                                git 'https://github.com/GRomR1/java-servlet-hello'
-                                echo "Cloned!"
-                            }
-                        }
-                        stage('Build'){
-                            steps{
-                                sh 'mvn -B -DskipTests clean package'
-                                echo "Built!"
-                            }
-                        }
-                        stage('Test'){
-                            steps{
-                                sh 'mvn test'
-                                echo "Tested!"
-                            }
-                        }
-                        stage('Build Image'){
-                            steps{
-                                script{
-                                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
-                                }
-                            }
-                        }
-                        stage('Deploy Image'){
-                            steps{
-                                script{
-                                    docker.withRegistry( '', registryCredential ) {
-                                    dockerImage.push()
-                                    }
-                                }
-                            }
-                        }
-                        stage('Cleanup'){
-                            steps {
-                                sh 'docker rmi $registry:$BUILD_NUMBER'
-                            }
-                        }
-                    }
+    			environment{
+				registry = "carmenilie/java-app"
+				registryCredential = 'dockerhub_id'
+				dockerImage = ''
+			}
+                    	agent{
+                        	label 'master'
+                    	}
+                    	stages{
+                        	stage('Clone Repo'){
+                            		steps{                            
+						git 'https://github.com/GRomR1/java-servlet-hello'
+						echo "Cloned!"
+                            		}
+                        	}
+				stage('Build'){
+					steps{
+						sh 'mvn -B -DskipTests clean package'
+						echo "Built!"
+				    	}
+				}
+				stage('Test'){
+					steps{
+						sh 'mvn test'
+						echo "Tested!"
+				    	}
+				}
+				stage('Build Image'){
+				    	steps{
+						script{
+					    		dockerImage = docker.build registry + ":$BUILD_NUMBER"
+						}
+				    	}
+				}
+				stage('Deploy Image'){
+				    	steps{
+						script{
+					    		docker.withRegistry( '', registryCredential ) {
+					    		dockerImage.push()
+					    		}
+						}
+				    	}
+				}
+				stage('Cleanup'){
+				    	steps {
+						sh 'docker rmi $registry:$BUILD_NUMBER'
+				    	}
+				}
+                    	}
                 }
 
               '''
